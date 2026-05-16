@@ -1,0 +1,79 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  syntax-check:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check PowerShell syntax
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem -Path Source -Filter *.ps1 -Recurse
+          $hasError = $false
+
+          foreach ($file in $files) {
+            $errors = $null
+            $null = [System.Management.Automation.Language.Parser]::ParseFile(
+              $file.FullName,
+              [ref]$null,
+              [ref]$errors
+            )
+
+            if ($errors.Count -gt 0) {
+              Write-Error "Syntax error(s) in $($file.Name):"
+              $errors | ForEach-Object { Write-Error "  Line $($_.Extent.StartLineNumber): $($_.Message)" }
+              $hasError = $true
+            } else {
+              Write-Host "OK: $($file.Name)"
+            }
+          }
+
+          if ($hasError) { exit 1 }
+
+  build-and-release:
+    runs-on: windows-latest
+    needs: syntax-check
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Package with IntuneWinAppUtil
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path output -Force | Out-Null
+          .\IntuneWinAppUtil.exe `
+            -c Source `
+            -s Setup-BitLockerPIN.ps1 `
+            -o output `
+            -q
+
+      - name: Upload artifact (main branch)
+        if: github.ref_type == 'branch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: intunewin-${{ github.sha }}
+          path: output/*.intunewin
+          retention-days: 30
+
+      - name: Create GitHub Release (version tag)
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          generate_release_notes: true
+          files: output/*.intunewin

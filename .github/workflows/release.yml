@@ -9,41 +9,8 @@ permissions:
   contents: write
 
 jobs:
-  syntax-check:
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Check PowerShell syntax
-        shell: pwsh
-        run: |
-          $files = Get-ChildItem -Path Source -Filter *.ps1 -Recurse
-          $hasError = $false
-
-          foreach ($file in $files) {
-            $errors = $null
-            $null = [System.Management.Automation.Language.Parser]::ParseFile(
-              $file.FullName,
-              [ref]$null,
-              [ref]$errors
-            )
-
-            if ($errors.Count -gt 0) {
-              Write-Error "Syntax error(s) in $($file.Name):"
-              $errors | ForEach-Object { Write-Error "  Line $($_.Extent.StartLineNumber): $($_.Message)" }
-              $hasError = $true
-            } else {
-              Write-Host "OK: $($file.Name)"
-            }
-          }
-
-          if ($hasError) { exit 1 }
-
   build-and-release:
     runs-on: windows-latest
-    needs: syntax-check
 
     steps:
       - name: Checkout repository

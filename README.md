@@ -71,6 +71,10 @@ Intune から配布する運用を想定しており、初期設定・スケジ�
 %windir%\SysNative\WindowsPowerShell\v1.0\PowerShell.exe -ExecutionPolicy Bypass -File .\Setup-BitLockerPIN.ps1
 ```
 
+### リターンコード
+- `0`: 既に TPM + PIN が設定されているため、変更は行わない
+- `1641`: BitLocker処理の継続のため、再起動が必要
+
 ### 検出ルール
 
 検出ルールは「カスタム検出スクリプト」を選択し、[Verify-BitLockerPIN.ps1](Verify-BitLockerPIN.ps1) を使用します。これにより、BitLocker が有効で、TPM + PIN が設定済みどうかを判定できます。

@@ -1,7 +1,7 @@
 ﻿# BitLocker状態取得
 $blv = Get-BitLockerVolume -MountPoint $env:SystemDrive
 
-if ($blv.VolumeStatus -eq "FullyDecrypted") {
+if ($blv.VolumeStatus -ne "FullyEncrypted") {
     Write-Output "BitLockerが有効ではありません。"
     exit 1
 }elseif (-not ($blv.KeyProtector | Where-Object { $_.KeyProtectorType -eq "TpmPin" })) {

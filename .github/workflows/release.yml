@@ -52,6 +52,7 @@ jobs:
       - name: Package with IntuneWinAppUtil
         shell: pwsh
         run: |
+          Invoke-WebRequest -Uri "https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool/raw/refs/heads/master/IntuneWinAppUtil.exe" -OutFile "IntuneWinAppUtil.exe"
           New-Item -ItemType Directory -Path output -Force | Out-Null
           .\IntuneWinAppUtil.exe `
             -c Source `

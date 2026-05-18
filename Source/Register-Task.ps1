@@ -1,18 +1,18 @@
 ﻿$TaskName = "EnforceBitLockerPIN"
-$ScriptPath = "C:\Scripts\Enforce-BitLockerPIN.ps1"
 
 # ディレクトリ作成
 if (-not (Test-Path -Path "C:\Scripts")) {
     New-Item -ItemType Directory -Path "C:\Scripts" | Out-Null
 }
 
-# 対象のスクリプトをコピー
-Copy-Item -Path "$PSScriptRoot\Enforce-BitLockerPIN.ps1" -Destination $ScriptPath -Force
+# 対象のスクリプトをBase64エンコード
+$ScriptContent = Get-Content -Path "$PSScriptRoot\Enforce-BitLockerPIN.ps1" -Raw
+$EncodedScript = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($ScriptContent))
 
 # 実行アクション
 $Action = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
-    -Argument "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$ScriptPath`""
+    -Argument "-WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand `"$EncodedScript`""
 
 # トリガー（ログオン時）
 $Trigger = New-ScheduledTaskTrigger -AtLogOn
@@ -27,7 +27,8 @@ $Settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries `
     -RestartCount 3 `
-    -RestartInterval (New-TimeSpan -Minutes 1)
+    -RestartInterval (New-TimeSpan -Minutes 1) `
+    -StartWhenAvailable
 
 # 登録
 Register-ScheduledTask `

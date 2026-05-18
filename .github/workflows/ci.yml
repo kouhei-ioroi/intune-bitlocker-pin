@@ -36,3 +36,29 @@ jobs:
           }
 
           if ($hasError) { exit 1 }
+
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Package with IntuneWinAppUtil
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool/raw/refs/heads/master/IntuneWinAppUtil.exe" -OutFile "IntuneWinAppUtil.exe"
+          New-Item -ItemType Directory -Path output -Force | Out-Null
+          .\IntuneWinAppUtil.exe `
+            -c Source `
+            -s Setup-BitLockerPIN.ps1 `
+            -o output `
+            -q
+
+      - name: Upload artifact (main branch)
+        if: github.ref_type == 'branch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: intunewin-${{ github.sha }}
+          path: output/*.intunewin
+          retention-days: 7

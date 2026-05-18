@@ -26,14 +26,10 @@ jobs:
             -s Setup-BitLockerPIN.ps1 `
             -o output `
             -q
-
-      - name: Upload artifact (main branch)
-        if: github.ref_type == 'branch'
-        uses: actions/upload-artifact@v4
-        with:
-          name: intunewin-${{ github.sha }}
-          path: output/*.intunewin
-          retention-days: 30
+      
+      - name: Copy Verify.ps1
+        shell: pwsh
+        run: Copy-Item -Path Verify.ps1 -Destination output\
 
       - name: Create GitHub Release (version tag)
         if: github.ref_type == 'tag'
@@ -42,4 +38,4 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           generate_release_notes: true
-          files: output/*.intunewin
+          files: output/*

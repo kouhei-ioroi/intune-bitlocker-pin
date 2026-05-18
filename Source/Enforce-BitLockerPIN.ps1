@@ -20,8 +20,6 @@ while ($true) {
     if (Test-PinChanged) {
         # タスクを削除する
         schtasks /Delete /TN $TaskName /F 2>$null
-        # スクリプトを削除する
-        Remove-Item -Path $PSCommandPath -Force -ErrorAction SilentlyContinue
         # PIN変更完了フラグファイルを作成する
         New-Item -Path "C:\Scripts\.PinChanged" -ItemType File -Force | Out-Null
         exit

@@ -1,4 +1,9 @@
-﻿# ログ出力先フォルダを作成する
+﻿# 引数でプリセットPINを受け取る
+param (
+    [string]$PresetPin = "123456"
+)
+
+# ログ出力先フォルダを作成する
 if (-not (Test-Path -Path "C:\Scripts")) {
     New-Item -ItemType Directory -Path "C:\Scripts" | Out-Null
 }
@@ -6,7 +11,11 @@ if (-not (Test-Path -Path "C:\Scripts")) {
 # スクリプトの実行ログを保存する
 Start-Transcript -Path "C:\Scripts\Setup-BitLockerPIN.log"
 
-$PresetPin  = "123456"
+# プリセットPINが4~20桁の数字であることをチェックする
+if ($PresetPin -notmatch '^\d{4,20}$') {
+    Write-Output "エラー: プリセットPINは4~20桁の数字でなければなりません。また、BitLockerポリシーで桁数が制限されている場合は、その範囲内で指定してください。"
+    exit 1
+}
 
 # BitLocker状態取得
 $blv = Get-BitLockerVolume -MountPoint $env:SystemDrive

@@ -9,9 +9,9 @@ Intuneのアプリケーション配布機能を利用して、Windows の BitLo
 3. ダウンロードしたintunewinパッケージをアップロードします。
 4. インストールコマンドに以下を指定します。
    ```
-   %windir%\SysNative\WindowsPowerShell\v1.0\PowerShell.exe -ExecutionPolicy Bypass -File .\Setup-BitLockerPIN.ps1
+   %windir%\SysNative\WindowsPowerShell\v1.0\PowerShell.exe -ExecutionPolicy Bypass -File .\Setup-BitLockerPIN.ps1 -PresetPin "123456"
    ```
-5. アンインストールコマンドに以下を指定します。
+5. アンインストールコマンドに以下を指定します。(アンインストールは機能しませんが、必須項目のため指定します)
    ```
     %windir%\SysNative\WindowsPowerShell\v1.0\PowerShell.exe -ExecutionPolicy Bypass -File .\Setup-BitLockerPIN.ps1
    ```

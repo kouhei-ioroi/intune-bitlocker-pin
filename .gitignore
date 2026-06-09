@@ -1,0 +1,5 @@
+node_modules/
+output/
+*.intunewin
+IntuneWinAppUtil.exe
+.DS_Store

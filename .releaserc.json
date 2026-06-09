@@ -1,0 +1,37 @@
+{
+  "branches": ["main"],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits",
+        "releaseRules": [
+          { "breaking": true, "release": "major" },
+          { "type": "feat", "release": "minor" },
+          { "type": "fix", "release": "patch" }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          {
+            "path": "output/*.intunewin",
+            "label": "Intune Win32 App Package"
+          },
+          {
+            "path": "output/Verify.ps1",
+            "label": "Verification Script"
+          }
+        ]
+      }
+    ]
+  ]
+}

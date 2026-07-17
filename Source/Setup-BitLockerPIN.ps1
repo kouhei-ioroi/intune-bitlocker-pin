@@ -80,7 +80,7 @@ try {
     if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
         Write-Step "エラー: このスクリプトは管理者権限で実行する必要があります。"
         $exitCode = 1
-        throw
+        return
     }
     Write-Step "管理者権限を確認しました。"
 

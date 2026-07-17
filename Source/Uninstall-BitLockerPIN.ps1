@@ -61,7 +61,7 @@ try {
     if ($null -eq $blv) {
         Write-Step "エラー: ドライブ $MountPoint の BitLocker ボリュームが見つかりません。"
         $exitCode = 1
-        throw
+        return
     }
 
     if ($blv.VolumeStatus -ne "FullyEncrypted") {
